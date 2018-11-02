@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const config = require('./config');
 const mkdirp = require('mkdirp');
  
@@ -20,10 +20,10 @@ const debug =
 const setupBrowser = async () => {
   if (process.env.NODE_ENV.includes('DEBUG') || debug) {
     browser = await puppeteer.launch({
-      executablePath: 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+      executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
       headless: false,
       slowMo: 500,
-      args: ['--disable-dev-shm-usage, --start-maximized'], // added due to lack of memory issue https://github.com/GoogleChrome/puppeteer/issues/1834
+      args: ['--disable-dev-shm-usage', '--start-maximized'], // added due to lack of memory issue https://github.com/GoogleChrome/puppeteer/issues/1834
     });
     jest.setTimeout(300000);
   } else {
