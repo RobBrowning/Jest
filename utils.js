@@ -22,7 +22,7 @@ const setupBrowser = async () => {
     browser = await puppeteer.launch({
       headless: false,
       slowMo: 500,
-      args: ['--disable-dev-shm-usage'], // added due to lack of memory issue https://github.com/GoogleChrome/puppeteer/issues/1834
+      args: ['--disable-dev-shm-usage, --start-maximized'], // added due to lack of memory issue https://github.com/GoogleChrome/puppeteer/issues/1834
     });
     jest.setTimeout(300000);
   } else {
