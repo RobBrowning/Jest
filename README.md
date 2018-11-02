@@ -17,6 +17,8 @@ npm i puppeteer-core //installs light weight puppeteer, no chromium installed
 NOTE: to remember in the utils file to also reference the correct puppeteer package 
 
 i.e. const puppeteer = require('puppeteer-core') or const puppeteer = require('puppeteer')
+
+If you install chromium by mistake run the same npm command again but only change the install to uninstall and it will remove that package, run again to install correct version.
 ---------------------------------------------
 
 npm install --save-dev jest-junit
