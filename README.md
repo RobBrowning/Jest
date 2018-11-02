@@ -5,7 +5,9 @@ Cloning, you will need to run the following commands -
 
 npm install --save-dev jest
 
-npm i puppeteer
+npm i puppeteer //installs chromium
+
+npm i puppeteer-core //installs light weight puppeteer, no chromium installed
 
 npm install --save-dev jest-junit
 
