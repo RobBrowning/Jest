@@ -69,7 +69,7 @@ For this example here is the command ran in the terminal to create the final rep
 ```
 lighthouse --config-path=lighthouseConfig.js --disable-device-emulation --output html --output-path ./test_results/lighthouse_reports/lighthousereport.html https://www.google.com
 ```
-![lighthouse cli command](README_md_images\lighthouseCLI.PNG)
+![lighthouse cli command](https://github.com/RobBrowning/Jest/blob/master/README_md_images/lighthouseCLI.PNG)
 
 
 
