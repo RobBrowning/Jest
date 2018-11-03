@@ -34,7 +34,7 @@ npm install --save-dev jest-axe
 npm init //to create package.json and reference all packages
 ```
 ```
-npm install --save-dev lighthouse
+npm install -g lighthouse
 ```
 
 ## Jest-Image-Snapshot 
@@ -44,7 +44,7 @@ After running this in the terminal, it will start to compare future test runs ag
 
 
 ## LightHouse
-We need to add a config.js file to the project folder.
+We need to add a config.js file to the project folder. We have named it ```lighthouseConfig.js```.
 
 When you run the tests through the terminal you need to declare the path to the config then followed by the url.  Create a new folder in ```test_results``` as ```lighthouse_reports```.
 
@@ -64,5 +64,12 @@ Add --disable-device-emulation to the command to run as if on a desktop. Also yo
 ```
 lighthouse --config-path=path/to/custom-config.js --disable-device-emulation --output html --output-path ./report.html https://example.com
 ```
+For this example here is the command ran in the terminal to create the final report in the test_results/lighthouse_reports folder.
+
+```
+lighthouse --config-path=lighthouseConfig.js --disable-device-emulation --output html --output-path ./test_results/lighthouse_reports/lighthousereport.html https://www.google.com
+```
+![lighthouse cli command](README_md_images\lighthouseCLI.PNG)
+
 
 
