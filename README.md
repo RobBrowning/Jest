@@ -39,7 +39,7 @@ npm install --save-dev lighthouse
 
 ## Jest-Image-Snapshot 
 To update benchmark images, run ```--updateSnapshot``` to accept new screenshots.
-After running this in the terminal, it will ctart to compare future test runs against the new benchmark images.
+After running this in the terminal, it will start to compare future test runs against the new benchmark images.
 
 
 
