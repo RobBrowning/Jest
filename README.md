@@ -25,4 +25,6 @@ npm install --save-dev jest-junit
 
 npm i --save-dev jest-image-snapshot
 
+npm install --save-dev jest-axe
+
 npm init //to create package.json and reference all packages
