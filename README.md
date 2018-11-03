@@ -33,3 +33,36 @@ npm install --save-dev jest-axe
 ```
 npm init //to create package.json and reference all packages
 ```
+```
+npm install --save-dev lighthouse
+```
+
+## Jest-Image-Snapshot 
+To update benchmark images, run ```--updateSnapshot``` to accept new screenshots.
+After running this in the terminal, it will ctart to compare future test runs against the new benchmark images.
+
+
+
+## LightHouse
+We need to add a config.js file to the project folder.
+
+When you run the tests through the terminal you need to declare the path to the config then followed by the url.  Create a new folder in ```test_results``` as ```lighthouse_reports```.
+
+```
+lighthouse --config-path=path/to/custom-config.js https://example.com
+```
+
+This will create an HTML report by default.
+The command to add to a build command to run and save report.
+
+```
+lighthouse --output html --output-path ./report.html
+```
+
+Add --disable-device-emulation to the command to run as if on a desktop. Also you can declare the output path for the html report. Example of this below.
+
+```
+lighthouse --config-path=path/to/custom-config.js --disable-device-emulation --output html --output-path ./report.html https://example.com
+```
+
+
