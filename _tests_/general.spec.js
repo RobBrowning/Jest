@@ -25,5 +25,21 @@ describe('General tests', () => {
     await page.waitForSelector(TestPageModel.locators.logo);
     await PageFunction.selectSearchField(page, 'test');
   }, 16000);
+
+test('Innertext example', async () => {
+  await page.goto(`${config.appUrlBase}${config.routes.home}`);
+  await page.waitForSelector(TestPageModel.locators.logo);
+  const gmailLink = await page.evaluate(() => document.querySelector('div.gb_re.gb_R.gb_Ug.gb_Lg > div:first-child > a.gb_P').textContent);
+  //const searchButtonText = await page.$eval(TestPageModel.locators.googleSearchButton, el => (el.innerText));
+  expect(gmailLink).toEqual("Gmail");
+},16000);
+  
+test('Element exists example', async () => {
+  await page.goto(`${config.appUrlBase}${config.routes.home}`);
+  await page.waitForSelector(TestPageModel.locators.logo);
+
+  const logoExists = await page.$eval(TestPageModel.locators.logo, el => (el ? true : false));
+  expect(logoExists).toBe(true);
+},16000);
 });
 
