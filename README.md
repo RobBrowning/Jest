@@ -3,6 +3,7 @@ This is an Jest / Puppeteer framework example
 
 Cloning, you will need to run the following commands -
 
+## Prerequisites
 npm install --save-dev jest
 
 This example is using puppeteer-core as chromium is too large for GitHub to allow - so in the utils I've referenced the location of chrome installed locally, just amend this to make it work for you.
@@ -20,11 +21,15 @@ i.e. const puppeteer = require('puppeteer-core') or const puppeteer = require('p
 
 If you install chromium by mistake run the same npm command again but only change the install to uninstall and it will remove that package, run again to install correct version.
 ---------------------------------------------
-
+```
 npm install --save-dev jest-junit
-
+```
+```
 npm i --save-dev jest-image-snapshot
-
+```
+```
 npm install --save-dev jest-axe
-
+```
+```
 npm init //to create package.json and reference all packages
+```
