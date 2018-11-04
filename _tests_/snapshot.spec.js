@@ -23,5 +23,5 @@ describe('Snapshot tests', () => {
       await page.goto(`${config.appUrlBase}${config.routes.home}`);
       const image = await page.screenshot({ fullPage: true });
       expect(image).toMatchImageSnapshot({ failureThreshold: '1', failureThresholdType: 'percent' });
-    });
+    },16000);
   });

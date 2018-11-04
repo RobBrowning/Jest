@@ -43,7 +43,7 @@ After running this in the terminal, it will start to compare future test runs ag
 
 
 
-## LightHouse
+## LightHouse CLI 
 We need to add a config.js file to the project folder. We have named it ```lighthouseConfig.js```.
 
 When you run the tests through the terminal you need to declare the path to the config then followed by the url.  Create a new folder in ```test_results``` as ```lighthouse_reports```.
@@ -71,3 +71,86 @@ lighthouse --config-path=lighthouseConfig.js --disable-device-emulation --output
 ```
 ![lighthouse cli command](https://github.com/RobBrowning/Jest/blob/master/README_md_images/lighthouseCLI.PNG)
 
+
+### Lighthouse + Puppeteer in Jest Tests
+For Lighthouse tests ran in Jest, I created a js file ```methods.js``` in ```page_models``` folder.
+
+In this I add - 
+
+```
+const lighthouse = require('lighthouse');
+
+
+module.exports = {
+
+    async lighthouseAudit(browser, url) {
+        jest.setTimeout(100000);
+        let lhr = await lighthouse(url, {
+            port: (new URL(browser.wsEndpoint())).port,
+            output: 'json',
+            logLevel: 'info',
+        });
+        return lhr;
+    },
+
+// scrape data from a Lighthouse audit for asserting against
+    async getResult(lhr, property) {
+
+        const propertyType = new Map()
+            .set('contrast', await lhr.lhr.audits["color-contrast"].score)
+            .set('vulnerabilities', await lhr.lhr.audits["no-vulnerable-libraries"].score)
+            .set('altText', await lhr.lhr.audits["image-alt"].score)
+            .set('pageSpeed', await lhr.lhr.audits["speed-index"].score)
+            .set('ariaAttributeValuesCorrect', await lhr.lhr.audits["aria-valid-attr-value"].score)
+            .set('ariaAttributesCorrect', await lhr.lhr.audits["aria-valid-attr"].score)
+            .set('duplicateId', await lhr.lhr.audits["duplicate-id"].score)
+            .set('tabIndex', await lhr.lhr.audits["tabindex"].score)
+            .set('logicalTabOrder', await lhr.lhr.audits["logical-tab-order"].score);
+
+
+        const score = new Map()
+            .set(0, 'Fail')
+            .set(1, 'Pass')
+            // in some cases, no score is returned, where a check is not applicable,
+            // i.e. checking for alt text where no images exist
+            .set(null, 'Pass');
+
+        let result = await score.get(propertyType.get(property));
+
+        return result;
+    },
+
+    async getLighthouseResult(lhr, property) {
+        const jsonProperty = new Map()
+            .set('accessibility', await lhr.lhr.categories.accessibility.score * 100)
+            .set('performance', await lhr.lhr.categories.performance.score * 100)
+            .set('progressiveWebApp', await lhr.lhr.categories.pwa.score * 100)
+            .set('bestPractices', await lhr.lhr.categories["best-practices"].score * 100)
+            .set('seo', await lhr.lhr.categories.seo.score * 100)
+            .set('pageSpeed', await lhr.lhr.audits["speed-index"].score * 100);
+
+
+        let result = await jsonProperty.get(property);
+        return result
+    }
+}
+```
+
+Then in a js file I saved a file ```lighthouse.spec.js``` and added the following Jest tests calling the methods from ```methods.js```.
+
+```
+describe('Google Lighthouse audit tests', async () => {
+    beforeAll(async () => {
+        // the url to be audited
+        const url = 'https://www.google.com';
+        // kick off a Lighthouse audit on the above url
+        lhr = await commonMethods.lighthouseAudit(browser, url);
+    });
+
+    // General accessibility overview score
+    it('passes an accessibility audit through Lighthouse', async () => {
+        const accessibilityScore = await commonMethods.getLighthouseResult(lhr, 'accessibility');
+        // Tester can set their own thresholds for pass marks
+        expect(accessibilityScore).toBeGreaterThanOrEqual(95);
+    },16000);
+```
