@@ -71,5 +71,3 @@ lighthouse --config-path=lighthouseConfig.js --disable-device-emulation --output
 ```
 ![lighthouse cli command](https://github.com/RobBrowning/Jest/blob/master/README_md_images/lighthouseCLI.PNG)
 
-
-
