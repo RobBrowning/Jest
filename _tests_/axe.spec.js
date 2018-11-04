@@ -23,23 +23,20 @@ afterEach(async () => {
 expect.extend(toHaveNoViolations)
 
 describe('Accessibility tests using AXE', () => {
-it('AXE - input field', async () => {
+it('AXE - Advertising page Accessibility Tests', async () => {
     await page.goto(`${config.appUrlBase}${config.routes.home}`);
     await page.waitForSelector(TestPageModel.locators.logo);
-    const render = () => '<input class="gsfi" id="lst-ib"/>'
+    await page.click(TestPageModel.locators.advertisingLink);
+    const html = await page.content();
 
-    // pass anything that outputs html to axe
-    const html = render()
     expect(await axe(html)).toHaveNoViolations()
 })
 
-it('AXE - input field', async () => {
-    await page.goto(`${config.appUrlBase}${config.routes.home}`);
-    await page.waitForSelector(TestPageModel.locators.logo);
-    const render = () => '<input name="btnk"/>'
+it('AXE - Homepage Accessibility Tests', async () => {
+  await page.goto(`${config.appUrlBase}${config.routes.home}`);
+  await page.waitForSelector(TestPageModel.locators.logo);
+  const html = await page.content();
 
-    // pass anything that outputs html to axe
-    const html = render()
-    expect(await axe(html)).toHaveNoViolations()
+  expect(await axe(html)).toHaveNoViolations()
 })
 });

@@ -45,7 +45,12 @@ npm install -g lighthouse
 To update benchmark images, run ```--updateSnapshot``` to accept new screenshots.
 After running this in the terminal, it will start to compare future test runs against the new benchmark images.
 
+## AXE Accessibility Tests
+Using AXE in Jest you can setup tests navigating to your pages and validating the HTML caught by Puppeteer using ```const html = await page.content();``` and passing html into the validation of the test ```expect(await axe(html)).toHaveNoViolations()```.
 
+Running the test will then validate against AXE rules and show the HTML where its failed on the page ran.
+
+![axe test and output](https://github.com/RobBrowning/Jest/blob/master/README_md_images/axeImage.PNG)
 
 ## LightHouse CLI 
 We need to add a config.js file to the project folder. We have named it ```lighthouseConfig.js```.
