@@ -28,6 +28,7 @@ const setupBrowser = async () => {
     jest.setTimeout(300000);
   } else {
     browser = await puppeteer.launch({
+      executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
       headless: true,
       args: ['--disable-dev-shm-usage'], // added due to lack of memory issue https://github.com/GoogleChrome/puppeteer/issues/1834
     });
