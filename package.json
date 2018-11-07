@@ -14,7 +14,11 @@
     "lighthouse": "^3.2.1"
   },
   "scripts": {
-    "test": "test"
+    "test": "jest",
+    "jest-debug": "set NODE_ENV=DEBUG && set URL=https://www.google.com && jest",
+    "env-testing": "set NODE_ENV=TESTING && set URL=https://www.google.com && jest",
+    "env-uat": "set NODE_ENV=UAT && set URL=https://UATURLHERE && jest",
+    "env-sandbox": "set NODE_ENV=SANDBOX && set URL=https://SANDBOXURLHERE && jest"
   },
   "repository": {
     "type": "git",

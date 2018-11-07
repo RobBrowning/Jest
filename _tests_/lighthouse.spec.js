@@ -9,7 +9,7 @@ let lhr;
 
 beforeAll(async () => {
     // can be run in a browser by changing this to 'headless: false'
-    browser = await puppeteer.launch({executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe', headless: true});
+    browser = await puppeteer.launch({executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe', headless: false});
     page = await browser.newPage();
 });
 afterAll(() => {
