@@ -45,6 +45,24 @@ npm install -g lighthouse
 To update benchmark images, run ```--updateSnapshot``` to accept new screenshots.
 After running this in the terminal, it will start to compare future test runs against the new benchmark images.
 
+So it will look like this in the terminal - 
+
+```
+node c:\pathToRepoLocally\Jest\node_modules\jest\bin\jest.js -t -u
+```
+
+or using --updateSnapshot as the following - 
+
+```
+node c:\pathToRepoLocally\Jest\node_modules\jest\bin\jest.js -t --updateSnapshot
+```
+
+For this example using the snapshot tests only it will be this, using 'Snapshot tests' from the describe title in snapshot.spec.js - 
+
+```
+node c:\working_git\Jest\node_modules\jest\bin\jest.js -t "Snapshot tests" --updateSnapshot
+```
+
 ## AXE Accessibility Tests
 Using AXE in Jest you can setup tests navigating to your pages and validating the HTML caught by Puppeteer using ```const html = await page.content();``` and passing html into the validation of the test ```expect(await axe(html)).toHaveNoViolations()```.
 
