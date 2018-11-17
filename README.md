@@ -54,7 +54,7 @@ npm run env-testing
 Or you can pass the same command in a build.
 
 
-![package.json Scripts](https://github.com/RobBrowning/Jest/blob/master/README_md_images/BuildCommand.png)
+![package.json Scripts](https://github.com/RobBrowning/Jest/blob/master/README_md_images/BuildCommand2.png)
 
 
 
