@@ -41,6 +41,23 @@ npm init //to create package.json and reference all packages
 npm install -g lighthouse
 ```
 
+## Running the tests
+
+To run tests you can run the below in the terminal, this will run ever test and on which URL you declared in the package.json under scripts.
+```
+npm run env-testing
+```
+
+![package.json Scripts](https://github.com/RobBrowning/Jest/blob/master/README_md_images/Scripts.PNG)
+
+
+Or you can pass the same command in a build.
+
+
+![package.json Scripts](https://github.com/RobBrowning/Jest/blob/master/README_md_images/BuildCommand.PNG)
+
+
+
 ## Jest-Image-Snapshot 
 To update benchmark images, run ```--updateSnapshot``` to accept new screenshots.
 After running this in the terminal, it will start to compare future test runs against the new benchmark images.

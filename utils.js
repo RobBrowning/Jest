@@ -36,6 +36,9 @@ const setupBrowser = async () => {
   }
   page = await browser.newPage();
   createExtensions(page);
+  // To use the below if viewport becomes ignored by puppeteer
+  //const override = Object.assign(page.viewport(), { width: 1900, height: 800 });
+  //await page.setViewport(override);
   page.setViewport({
     width: browserWidth,
     height: browserHeight,
