@@ -43,7 +43,7 @@ npm install -g lighthouse
 
 ## Running the tests
 
-To run tests you can run the below in the terminal, this will run ever test and on which URL you declared in the package.json under scripts.
+To run tests you can run the below in the terminal, when running this, it will run every test on the URL you declared in the package.json under scripts.
 ```
 npm run env-testing
 ```
@@ -54,7 +54,7 @@ npm run env-testing
 Or you can pass the same command in a build.
 
 
-![package.json Scripts](https://github.com/RobBrowning/Jest/blob/master/README_md_images/BuildCommand.PNG)
+![package.json Scripts](https://github.com/RobBrowning/Jest/blob/master/README_md_images/BuildCommand.png)
 
 
 
