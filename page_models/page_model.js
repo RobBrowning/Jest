@@ -1,7 +1,8 @@
 module.exports.locators = {
     searchField: '[name="q"]',
     logo: '#hplogo',
-    googleSearchButton: '[name="btnK"]',
+    resultsLogo:'#logo > img',
+    googleSearchButton: '[name="btnK"]', 
     gmailLink: 'div.gb_re.gb_R.gb_Ug.gb_Lg > div:first-child > a.gb_P',
     advertisingLink: '#fsl > a:first-child',
 

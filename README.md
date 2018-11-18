@@ -220,3 +220,41 @@ Faker gives you a long list of options for test data - The test above is just us
 [npm Faker](https://www.npmjs.com/package/faker)
 
 
+
+### Data driven Jest tests 
+I added a new js file called ```Data.js``` to hold the test data. In the file it can hold hard coded data for tests or the Faker generated data.
+
+
+#### Data.js
+```
+const faker = require('faker');
+
+exports.email = (faker.internet.email()).toLowerCase();
+exports.password = faker.internet.password();
+exports.url = faker.internet.url();
+exports.invalidPassword = faker.internet.password(4);
+exports.randomNumber = faker.random.number({ min: 0, max: 99999999999999 });
+exports.unicodeCharacters = '👾 🙇 💁 🙅 🙆 🙋 🙎 🙍';
+exports.name = faker.name.findName;
+exports.fName = faker.name.firstName;
+exports.lName = faker.name.lastName;
+exports.age = faker.random.number(100);
+exports.naughtyString = '＜script＞alert(123)＜/script＞';
+```
+
+In the test, at the top of the spec file I added the reference ```const text = require('../TestData/Data');``` and the test would reference the wanted test data. In this example its using the ```text.naughtyString``` linking to the ```exports.naughtyString = '＜script＞alert(123)＜/script＞';``` in the Data.js file.
+
+```
+   //Test using test data in a js file to handle data
+    it('should use testdata', async () => {
+        await page.goto(`${config.appUrlBase}${config.routes.home}`);
+        await page.waitForSelector(TestPageModel.locators.logo);
+        await page.click(TestPageModel.locators.searchField);
+        await page.keyboard.type(text.naughtyString);
+        await page.click(TestPageModel.locators.googleSearchButton);
+        const logoExists = await page.$eval(TestPageModel.locators.resultsLogo, el => (el ? true : false));
+        expect(logoExists).toBe(true);
+    }, 50000);
+```
+
+

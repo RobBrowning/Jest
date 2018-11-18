@@ -2,8 +2,8 @@ const utils = require('../utils');
 const config = require('../config');
 const TestPageModel = require('../page_models/page_model');
 const PageFunctions = require('../page_models/functions');
-
-//const randomNaughtyString = require('naughty-string-validator');
+const text = require('../TestData/Data');
+const faker = require('faker');
 
 const testSuiteName = 'naughty strings tests';
 
@@ -31,17 +31,14 @@ describe('Naughty Suite', () => {
         await page.type(TestPageModel.locators.searchField, data);
     }, 30000);
 
-    const { getNaughtyString } = require('../page_models/helper');
-    //Test using naughty string validator for random test data
-    describe('Naughty Suite', () => {
-    it('should use Faker and naughty string validator for random test string input', async () => {
-        var data = faker.address.streetAddress();
-        //var string = randomNaughtyString();
+    //Test using test data in a js file to handle data
+    it('should use testdata', async () => {
         await page.goto(`${config.appUrlBase}${config.routes.home}`);
         await page.waitForSelector(TestPageModel.locators.logo);
-        await page.focus(TestPageModel.locators.searchField);
-        await page.type(TestPageModel.locators.searchField, data);
-    }, 30000);
-
-
-});
+        await page.click(TestPageModel.locators.searchField);
+        await page.keyboard.type(text.naughtyStringXSS);
+        await page.click(TestPageModel.locators.googleSearchButton);
+        const logoExists = await page.$eval(TestPageModel.locators.resultsLogo, el => (el ? true : false));
+        expect(logoExists).toBe(true);
+    }, 50000);
+})
