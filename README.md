@@ -198,3 +198,25 @@ describe('Google Lighthouse audit tests', async () => {
         expect(accessibilityScore).toBeGreaterThanOrEqual(95);
     },16000);
 ```
+
+### Faker tests using Faker for test data
+
+I installed Faker via the terminal ```npm Faker``` then once downloaded, I added a new class called naughtyStrings.spec.js (this will be used later to test the naughty list of strings).
+
+At the top of the new js file I added ```const faker = require('faker');``` and in the test itself -  
+```
+//Test using Faker for random test data
+describe('Naughty Suite', () => {
+    it('should use Faker for random test string input', async () => {
+        var data = faker.address.streetAddress();
+        await page.goto(`${config.appUrlBase}${config.routes.home}`);
+        await page.waitForSelector(TestPageModel.locators.logo);
+        await page.focus(TestPageModel.locators.searchField);
+        await page.type(TestPageModel.locators.searchField, data);
+    }, 30000);
+```
+Faker gives you a long list of options for test data - The test above is just using the faker.address.streetAddress(); to type into Google's search field but there are loads more options listed on the npm page for Faker - 
+
+[npm Faker](https://www.npmjs.com/package/faker)
+
+
