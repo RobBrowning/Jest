@@ -242,7 +242,7 @@ exports.age = faker.random.number(100);
 exports.naughtyString = '＜script＞alert(123)＜/script＞';
 ```
 
-In the test, at the top of the spec file I added the reference ```const text = require('../TestData/Data');``` and the test would reference the wanted test data. In this example its using the ```text.naughtyString``` linking to the ```exports.naughtyString = '＜script＞alert(123)＜/script＞';``` in the Data.js file.
+In the test, at the top of the spec file I added the reference ```const text = require('../TestData/Data');``` and the test would reference the wanted test data. In this example its using the ```text.naughtyStringXSS``` linking to the ```exports.naughtyStringXSS = '＜script＞alert(123)＜/script＞';``` in the Data.js file.
 
 ```
    //Test using test data in a js file to handle data
@@ -250,7 +250,7 @@ In the test, at the top of the spec file I added the reference ```const text = r
         await page.goto(`${config.appUrlBase}${config.routes.home}`);
         await page.waitForSelector(TestPageModel.locators.logo);
         await page.click(TestPageModel.locators.searchField);
-        await page.keyboard.type(text.naughtyString);
+        await page.keyboard.type(text.naughtyStringXSS);
         await page.click(TestPageModel.locators.googleSearchButton);
         const logoExists = await page.$eval(TestPageModel.locators.resultsLogo, el => (el ? true : false));
         expect(logoExists).toBe(true);
