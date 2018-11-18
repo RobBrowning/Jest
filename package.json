@@ -4,11 +4,13 @@
   "description": "This is an Jest / Puppeteer framework example",
   "main": "config.js",
   "dependencies": {
+    "faker": "^4.1.0",
     "jest": "^23.6.0",
     "jest-axe": "^3.1.0",
     "jest-image-snapshot": "^2.6.0",
     "jest-junit": "^5.2.0",
     "lighthouse": "^3.2.1",
+    "naughty-string-validator": "^1.1.0",
     "puppeteer-core": "^1.10.0"
   },
   "devDependencies": {
