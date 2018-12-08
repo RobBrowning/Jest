@@ -1,4 +1,4 @@
-![Jest and Puppeteer](https://github.com/RobBrowning/Jest/blob/master/README_md_images/jestAndPuppeteer.PNG)
+![Jest and Puppeteer](https://github.com/RobBrowning/Jest/blob/master/README_md_images/jestAndPuppeteer.png)
 
 # jest_Puppeteer_example
 This is an Jest / Puppeteer framework example
