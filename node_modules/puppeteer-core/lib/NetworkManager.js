@@ -15,6 +15,7 @@
  */
 const EventEmitter = require('events');
 const {helper, assert, debugError} = require('./helper');
+const {Events} = require('./Events');
 const Multimap = require('./Multimap');
 
 class NetworkManager extends EventEmitter {
@@ -135,7 +136,8 @@ class NetworkManager extends EventEmitter {
    * @param {!Protocol.Network.requestWillBeSentPayload} event
    */
   _onRequestWillBeSent(event) {
-    if (this._protocolRequestInterceptionEnabled) {
+    // Request interception doesn't happen for data URLs with Network Service.
+    if (this._protocolRequestInterceptionEnabled && !event.request.url.startsWith('data:')) {
       const requestHash = generateRequestHash(event.request);
       const interceptionId = this._requestHashToInterceptionIds.firstValue(requestHash);
       if (interceptionId) {
@@ -205,7 +207,7 @@ class NetworkManager extends EventEmitter {
     const frame = event.frameId && this._frameManager ? this._frameManager.frame(event.frameId) : null;
     const request = new Request(this._client, frame, interceptionId, this._userRequestInterceptionEnabled, event, redirectChain);
     this._requestIdToRequest.set(event.requestId, request);
-    this.emit(NetworkManager.Events.Request, request);
+    this.emit(Events.NetworkManager.Request, request);
   }
 
 
@@ -229,8 +231,8 @@ class NetworkManager extends EventEmitter {
     response._bodyLoadedPromiseFulfill.call(null, new Error('Response body is unavailable for redirect responses'));
     this._requestIdToRequest.delete(request._requestId);
     this._attemptedAuthentications.delete(request._interceptionId);
-    this.emit(NetworkManager.Events.Response, response);
-    this.emit(NetworkManager.Events.RequestFinished, request);
+    this.emit(Events.NetworkManager.Response, response);
+    this.emit(Events.NetworkManager.RequestFinished, request);
   }
 
   /**
@@ -243,7 +245,7 @@ class NetworkManager extends EventEmitter {
       return;
     const response = new Response(this._client, request, event.response);
     request._response = response;
-    this.emit(NetworkManager.Events.Response, response);
+    this.emit(Events.NetworkManager.Response, response);
   }
 
   /**
@@ -262,7 +264,7 @@ class NetworkManager extends EventEmitter {
       request.response()._bodyLoadedPromiseFulfill.call(null);
     this._requestIdToRequest.delete(request._requestId);
     this._attemptedAuthentications.delete(request._interceptionId);
-    this.emit(NetworkManager.Events.RequestFinished, request);
+    this.emit(Events.NetworkManager.RequestFinished, request);
   }
 
   /**
@@ -280,7 +282,7 @@ class NetworkManager extends EventEmitter {
       response._bodyLoadedPromiseFulfill.call(null);
     this._requestIdToRequest.delete(request._requestId);
     this._attemptedAuthentications.delete(request._interceptionId);
-    this.emit(NetworkManager.Events.RequestFailed, request);
+    this.emit(Events.NetworkManager.RequestFailed, request);
   }
 }
 
@@ -391,18 +393,27 @@ class Request {
   }
 
   /**
-   * @param {!Object=} overrides
+   * @param {!{url?: string, method?:string, postData?: string, headers?: !Object}} overrides
    */
   async continue(overrides = {}) {
+    // Request interception is not supported for data: urls.
+    if (this._url.startsWith('data:'))
+      return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
+    const {
+      url,
+      method,
+      postData,
+      headers
+    } = overrides;
     this._interceptionHandled = true;
     await this._client.send('Network.continueInterceptedRequest', {
       interceptionId: this._interceptionId,
-      url: overrides.url,
-      method: overrides.method,
-      postData: overrides.postData,
-      headers: overrides.headers,
+      url,
+      method,
+      postData,
+      headers,
     }).catch(error => {
       // In certain cases, protocol will return error if the request was already canceled
       // or the page was closed. We should tolerate these errors.
@@ -460,6 +471,9 @@ class Request {
    * @param {string=} errorCode
    */
   async abort(errorCode = 'failed') {
+    // Request interception is not supported for data: urls.
+    if (this._url.startsWith('data:'))
+      return;
     const errorReason = errorReasons[errorCode];
     assert(errorReason, 'Unknown error code: ' + errorCode);
     assert(this._allowInterception, 'Request Interception is not enabled!');
@@ -492,8 +506,6 @@ const errorReasons = {
   'timedout': 'TimedOut',
   'failed': 'Failed',
 };
-
-helper.tracePublicAPI(Request);
 
 class Response {
   /**
@@ -635,7 +647,8 @@ class Response {
     return this._request.frame();
   }
 }
-helper.tracePublicAPI(Response);
+
+const IGNORED_HEADERS = new Set(['accept', 'referer', 'x-devtools-emulate-network-conditions-client-id', 'cookie', 'origin', 'content-type', 'intervention']);
 
 /**
  * @param {!Protocol.Network.Request} request
@@ -663,7 +676,7 @@ function generateRequestHash(request) {
     for (let header of headers) {
       const headerValue = request.headers[header];
       header = header.toLowerCase();
-      if (header === 'accept' || header === 'referer' || header === 'x-devtools-emulate-network-conditions-client-id' || header === 'cookie')
+      if (IGNORED_HEADERS.has(header))
         continue;
       hash.headers[header] = headerValue;
     }
@@ -718,13 +731,6 @@ class SecurityDetails {
     return this._protocol;
   }
 }
-
-NetworkManager.Events = {
-  Request: 'request',
-  Response: 'response',
-  RequestFailed: 'requestfailed',
-  RequestFinished: 'requestfinished',
-};
 
 const statusTexts = {
   '100': 'Continue',
@@ -789,4 +795,4 @@ const statusTexts = {
   '511': 'Network Authentication Required',
 };
 
-module.exports = {Request, Response, NetworkManager};
+module.exports = {Request, Response, NetworkManager, SecurityDetails};

@@ -16,41 +16,6 @@
 const {TimeoutError} = require('./Errors');
 
 const debugError = require('debug')(`puppeteer:error`);
-/** @type {?Map<string, boolean>} */
-let apiCoverage = null;
-
-/**
- * @param {!Object} classType
- * @param {string=} publicName
- */
-function traceAPICoverage(classType, publicName) {
-  if (!apiCoverage)
-    return;
-
-  let className = publicName || classType.prototype.constructor.name;
-  className = className.substring(0, 1).toLowerCase() + className.substring(1);
-  for (const methodName of Reflect.ownKeys(classType.prototype)) {
-    const method = Reflect.get(classType.prototype, methodName);
-    if (methodName === 'constructor' || typeof methodName !== 'string' || methodName.startsWith('_') || typeof method !== 'function')
-      continue;
-    apiCoverage.set(`${className}.${methodName}`, false);
-    Reflect.set(classType.prototype, methodName, function(...args) {
-      apiCoverage.set(`${className}.${methodName}`, true);
-      return method.call(this, ...args);
-    });
-  }
-
-  if (classType.Events) {
-    for (const event of Object.values(classType.Events))
-      apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, false);
-    const method = Reflect.get(classType.prototype, 'emit');
-    Reflect.set(classType.prototype, 'emit', function(event, ...args) {
-      if (this.listenerCount(event))
-        apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, true);
-      return method.call(this, event, ...args);
-    });
-  }
-}
 
 class Helper {
   /**
@@ -133,9 +98,8 @@ class Helper {
 
   /**
    * @param {!Object} classType
-   * @param {string=} publicName
    */
-  static tracePublicAPI(classType, publicName) {
+  static installAsyncStackHooks(classType) {
     for (const methodName of Reflect.ownKeys(classType.prototype)) {
       const method = Reflect.get(classType.prototype, methodName);
       if (methodName === 'constructor' || typeof methodName !== 'string' || methodName.startsWith('_') || typeof method !== 'function' || method.constructor.name !== 'AsyncFunction')
@@ -151,14 +115,12 @@ class Helper {
         });
       });
     }
-
-    traceAPICoverage(classType, publicName);
   }
 
   /**
    * @param {!NodeJS.EventEmitter} emitter
    * @param {(string|symbol)} eventName
-   * @param {function(?)} handler
+   * @param {function(?):void} handler
    * @return {{emitter: !NodeJS.EventEmitter, eventName: (string|symbol), handler: function(?)}}
    */
   static addEventListener(emitter, eventName, handler) {
@@ -167,23 +129,12 @@ class Helper {
   }
 
   /**
-   * @param {!Array<{emitter: !NodeJS.EventEmitter, eventName: (string|symbol), handler: function(?)}>} listeners
+   * @param {!Array<{emitter: !NodeJS.EventEmitter, eventName: (string|symbol), handler: function(?):void}>} listeners
    */
   static removeEventListeners(listeners) {
     for (const listener of listeners)
       listener.emitter.removeListener(listener.eventName, listener.handler);
     listeners.splice(0, listeners.length);
-  }
-
-  /**
-   * @return {?Map<string, boolean>}
-   */
-  static publicAPICoverage() {
-    return apiCoverage;
-  }
-
-  static recordPublicAPICoverage() {
-    apiCoverage = new Map();
   }
 
   /**
@@ -220,7 +171,7 @@ class Helper {
 
   /**
    * @param {!NodeJS.EventEmitter} emitter
-   * @param {string} eventName
+   * @param {(string|symbol)} eventName
    * @param {function} predicate
    * @return {!Promise}
    */

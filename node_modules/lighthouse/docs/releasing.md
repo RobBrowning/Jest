@@ -33,15 +33,15 @@ We follow [semver](https://semver.org/) versioning semantics (`vMajor.Minor.Patc
 ```sh
 # use a custom lighthouse-pristine checkout to make sure your dev files aren't involved.
 
-# * Install the latest. This also builds the cli, extension, and viewer *
-yarn install-all
+# * Install the latest.*
+yarn
 
 # * Bump it *
 yarn version --no-git-tag-version
-# manually bump extension v in extension/app/manifest.json
+# manually bump extension v in clients/extension/manifest.json
 yarn update:sample-json
 
-# * Build it *
+# * Build it. This also builds the cli, extension, and viewer. *
 yarn build-all
 
 # * Test err'thing *
@@ -67,9 +67,11 @@ cd ../lighthouse-pristine; command rm -f lighthouse-*.tgz
 
 echo "Test the lighthouse-viewer build"
 # Manual test for now:
-# Start a server in lighthouse-viewer/dist/ and open the page in a tab. You should see the viewer.
+# Start a server in dist/viewer/ and open the page in a tab. You should see the viewer.
 # Drop in a results.json or paste an existing gist url (e.g. https://gist.github.com/ebidel/b9fd478b5f40bf5fab174439dc18f83a).
 # Check for errors!
+cd dist/viewer ; python -m SimpleHTTPServer
+# go to http://localhost:8000/
 
 # * Update changelog *
 git fetch --tags
@@ -93,10 +95,16 @@ git push --tags
 echo "Rebuild extension and viewer to get the latest, tagged master commit"
 yarn build-all;
 
-# zip the extension files, but remove lh-background as it's not needed
-cd lighthouse-extension; command rm -f dist/scripts/lighthouse-background.js; gulp package; cd ..
+# zip the extension files
+node build/build-extension.js package; cd dist/extension-package/
 echo "Go here: https://chrome.google.com/webstore/developer/edit/blipmdconlkpinefehnmjammfjpmpbjk "
 echo "Upload the package zip to CWS dev dashboard"
+# Be in lighthouse-extension-owners group
+# Open <https://chrome.google.com/webstore/developer/dashboard>
+# Click _Edit_ on lighthouse
+# _Upload Updated Package_
+# Select `lighthouse-4.X.X.zip`
+# _Publish_ at the bottom
 
 echo "Verify the npm package won't include unncessary files"
 npm pack --dry-run

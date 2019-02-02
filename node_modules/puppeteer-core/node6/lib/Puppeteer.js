@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const {helper} = require('./helper');
 const Launcher = require('./Launcher');
 const BrowserFetcher = require('./BrowserFetcher');
 
@@ -29,7 +28,7 @@ module.exports = class {
   }
 
   /**
-   * @param {!Object=} options
+   * @param {!(Launcher.LaunchOptions & Launcher.ChromeArgOptions & Launcher.BrowserOptions)=} options
    * @return {!Promise<!Puppeteer.Browser>}
    */
   launch(options) {
@@ -37,7 +36,7 @@ module.exports = class {
   }
 
   /**
-   * @param {{browserWSEndpoint: string, ignoreHTTPSErrors: boolean, transport?: !Puppeteer.ConnectionTransport}} options
+   * @param {!(Launcher.BrowserOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: !Puppeteer.ConnectionTransport})} options
    * @return {!Promise<!Puppeteer.Browser>}
    */
   connect(options) {
@@ -52,6 +51,7 @@ module.exports = class {
   }
 
   /**
+   * @param {!Launcher.ChromeArgOptions=} options
    * @return {!Array<string>}
    */
   defaultArgs(options) {
@@ -59,7 +59,7 @@ module.exports = class {
   }
 
   /**
-   * @param {!Object=} options
+   * @param {!BrowserFetcher.Options=} options
    * @return {!BrowserFetcher}
    */
   createBrowserFetcher(options) {
@@ -67,4 +67,3 @@ module.exports = class {
   }
 };
 
-helper.tracePublicAPI(module.exports, 'Puppeteer');

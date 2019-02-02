@@ -15,6 +15,8 @@
  */
 const os = require('os');
 const path = require('path');
+const http = require('http');
+const URL = require('url');
 const removeFolder = require('rimraf');
 const childProcess = require('child_process');
 const BrowserFetcher = require('./BrowserFetcher');
@@ -22,7 +24,7 @@ const {Connection} = require('./Connection');
 const {Browser} = require('./Browser');
 const readline = require('readline');
 const fs = require('fs');
-const {helper, debugError} = require('./helper');
+const {helper, assert, debugError} = require('./helper');
 const {TimeoutError} = require('./Errors');
 const WebSocketTransport = require('./WebSocketTransport');
 const PipeTransport = require('./PipeTransport');
@@ -34,6 +36,7 @@ const CHROME_PROFILE_PATH = path.join(os.tmpdir(), 'puppeteer_dev_profile-');
 
 const DEFAULT_ARGS = [
   '--disable-background-networking',
+  '--enable-features=NetworkService,NetworkServiceInProcess',
   '--disable-background-timer-throttling',
   '--disable-backgrounding-occluded-windows',
   '--disable-breakpad',
@@ -42,14 +45,14 @@ const DEFAULT_ARGS = [
   '--disable-dev-shm-usage',
   '--disable-extensions',
   // TODO: Support OOOPIF. @see https://github.com/GoogleChrome/puppeteer/issues/2548
-  '--disable-features=site-per-process',
+  '--disable-features=site-per-process,TranslateUI',
   '--disable-hang-monitor',
   '--disable-ipc-flooding-protection',
   '--disable-popup-blocking',
   '--disable-prompt-on-repost',
   '--disable-renderer-backgrounding',
   '--disable-sync',
-  '--disable-translate',
+  '--force-color-profile=srgb',
   '--metrics-recording-only',
   '--no-first-run',
   '--safebrowsing-disable-auto-update',
@@ -71,7 +74,7 @@ class Launcher {
   }
 
   /**
-   * @param {!(LaunchOptions & ChromeArgOptions & BrowserOptions)=} options
+   * @param {!(Launcher.LaunchOptions & Launcher.ChromeArgOptions & Launcher.BrowserOptions)=} options
    * @return {!Promise<!Browser>}
    */
   async launch(options = {}) {
@@ -236,7 +239,7 @@ class Launcher {
   }
 
   /**
-   * @param {!ChromeArgOptions=} options
+   * @param {!Launcher.ChromeArgOptions=} options
    * @return {!Array<string>}
    */
   defaultArgs(options = {}) {
@@ -274,18 +277,33 @@ class Launcher {
   }
 
   /**
-   * @param {!(BrowserOptions & {browserWSEndpoint: string, transport?: !Puppeteer.ConnectionTransport})} options
+   * @param {!(Launcher.BrowserOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: !Puppeteer.ConnectionTransport})} options
    * @return {!Promise<!Browser>}
    */
   async connect(options) {
     const {
       browserWSEndpoint,
+      browserURL,
       ignoreHTTPSErrors = false,
       defaultViewport = {width: 800, height: 600},
-      transport = await WebSocketTransport.create(browserWSEndpoint),
+      transport,
       slowMo = 0,
     } = options;
-    const connection = new Connection(browserWSEndpoint, transport, slowMo);
+
+    assert(Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) === 1, 'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect');
+
+    let connection = null;
+    if (transport) {
+      connection = new Connection('', transport, slowMo);
+    } else if (browserWSEndpoint) {
+      const connectionTransport = await WebSocketTransport.create(browserWSEndpoint);
+      connection = new Connection(browserWSEndpoint, connectionTransport, slowMo);
+    } else if (browserURL) {
+      const connectionURL = await getWSEndpoint(browserURL);
+      const connectionTransport = await WebSocketTransport.create(connectionURL);
+      connection = new Connection(connectionURL, connectionTransport, slowMo);
+    }
+
     const {browserContextIds} = await connection.send('Target.getBrowserContexts');
     return Browser.create(connection, browserContextIds, ignoreHTTPSErrors, defaultViewport, null, () => connection.send('Browser.close').catch(debugError));
   }
@@ -374,7 +392,39 @@ function waitForWSEndpoint(chromeProcess, timeout, preferredRevision) {
 }
 
 /**
- * @typedef {Object} ChromeArgOptions
+ * @param {string} browserURL
+ * @return {!Promise<string>}
+ */
+function getWSEndpoint(browserURL) {
+  let resolve, reject;
+  const promise = new Promise((res, rej) => { resolve = res; reject = rej; });
+
+  const endpointURL = URL.resolve(browserURL, '/json/version');
+  const requestOptions = Object.assign(URL.parse(endpointURL), { method: 'GET' });
+  const request = http.request(requestOptions, res => {
+    let data = '';
+    if (res.statusCode !== 200) {
+      // Consume response data to free up memory.
+      res.resume();
+      reject(new Error('HTTP ' + res.statusCode));
+      return;
+    }
+    res.setEncoding('utf8');
+    res.on('data', chunk => data += chunk);
+    res.on('end', () => resolve(JSON.parse(data).webSocketDebuggerUrl));
+  });
+
+  request.on('error', reject);
+  request.end();
+
+  return promise.catch(e => {
+    e.message = `Failed to fetch browser webSocket url from ${endpointURL}: ` + e.message;
+    throw e;
+  });
+}
+
+/**
+ * @typedef {Object} Launcher.ChromeArgOptions
  * @property {boolean=} headless
  * @property {Array<string>=} args
  * @property {string=} userDataDir
@@ -382,9 +432,9 @@ function waitForWSEndpoint(chromeProcess, timeout, preferredRevision) {
  */
 
 /**
- * @typedef {Object} LaunchOptions
+ * @typedef {Object} Launcher.LaunchOptions
  * @property {string=} executablePath
- * @property {boolean=} ignoreDefaultArgs
+ * @property {boolean|Array<string>=} ignoreDefaultArgs
  * @property {boolean=} handleSIGINT
  * @property {boolean=} handleSIGTERM
  * @property {boolean=} handleSIGHUP
@@ -395,7 +445,7 @@ function waitForWSEndpoint(chromeProcess, timeout, preferredRevision) {
  */
 
 /**
- * @typedef {Object} BrowserOptions
+ * @typedef {Object} Launcher.BrowserOptions
  * @property {boolean=} ignoreHTTPSErrors
  * @property {(?Puppeteer.Viewport)=} defaultViewport
  * @property {number=} slowMo

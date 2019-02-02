@@ -1,5 +1,21 @@
+/**
+ * Copyright 2019 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+const {Events} = require('./Events');
 const {Page} = require('./Page');
-const {helper} = require('./helper');
 
 class Target {
   /**
@@ -20,7 +36,19 @@ class Target {
     this._screenshotTaskQueue = screenshotTaskQueue;
     /** @type {?Promise<!Puppeteer.Page>} */
     this._pagePromise = null;
-    this._initializedPromise = new Promise(fulfill => this._initializedCallback = fulfill);
+    this._initializedPromise = new Promise(fulfill => this._initializedCallback = fulfill).then(async success => {
+      if (!success)
+        return false;
+      const opener = this.opener();
+      if (!opener || !opener._pagePromise || this.type() !== 'page')
+        return true;
+      const openerPage = await opener._pagePromise;
+      if (!openerPage.listenerCount(Events.Page.Popup))
+        return true;
+      const popupPage = await this.page();
+      openerPage.emit(Events.Page.Popup, popupPage);
+      return true;
+    });
     this._isClosedPromise = new Promise(fulfill => this._closedCallback = fulfill);
     this._isInitialized = this._targetInfo.type !== 'page' || this._targetInfo.url !== '';
     if (this._isInitialized)
@@ -99,7 +127,5 @@ class Target {
     }
   }
 }
-
-helper.tracePublicAPI(Target);
 
 module.exports = {Target};

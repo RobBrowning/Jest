@@ -125,7 +125,7 @@ class BrowserFetcher {
 
   /**
    * @param {string} revision
-   * @param {?function(number, number)} progressCallback
+   * @param {?function(number, number):void} progressCallback
    * @return {!Promise<!BrowserFetcher.RevisionInfo>}
    */
   async download(revision, progressCallback) {
@@ -161,7 +161,6 @@ class BrowserFetcher {
 
   /**
    * @param {string} revision
-   * @return {!Promise}
    */
   async remove(revision) {
     const folderPath = this._getFolderPath(revision);
@@ -218,7 +217,7 @@ function parseFolderPath(folderPath) {
 /**
  * @param {string} url
  * @param {string} destinationPath
- * @param {?function(number, number)} progressCallback
+ * @param {?function(number, number):void} progressCallback
  * @return {!Promise}
  */
 function downloadFile(url, destinationPath, progressCallback) {

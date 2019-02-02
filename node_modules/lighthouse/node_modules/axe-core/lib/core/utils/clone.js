@@ -3,9 +3,11 @@
  * @param  {Mixed} obj The object/array to clone
  * @return {Mixed}     A clone of the initial object or array
  */
-axe.utils.clone = function (obj) {
+axe.utils.clone = function(obj) {
+	/* eslint guard-for-in: 0*/
 	'use strict';
-	var index, length,
+	var index,
+		length,
 		out = obj;
 
 	if (obj !== null && typeof obj === 'object') {
@@ -16,7 +18,6 @@ axe.utils.clone = function (obj) {
 			}
 		} else {
 			out = {};
-			// jshint forin: false
 			for (index in obj) {
 				out[index] = axe.utils.clone(obj[index]);
 			}
