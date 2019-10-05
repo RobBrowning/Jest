@@ -5,16 +5,15 @@
   "main": "config.js",
   "dependencies": {
     "faker": "^4.1.0",
-    "jest-axe": "^3.1.0",
-    "jest-image-snapshot": "^2.7.0",
+    "jest-image-snapshot": "^2.11.0",
     "naughty-string-validator": "^1.1.0",
-    "puppeteer-core": "^1.12.1"
+    "puppeteer-core": "^1.20.0"
   },
   "devDependencies": {
-    "jest": "^24.0.0",
-    "jest-axe": "^3.1.0",
-    "jest-junit": "^6.2.1",
-    "lighthouse": "^4.1.0"
+    "jest": "^24.9.0",
+    "jest-axe": "^3.2.0",
+    "jest-junit": "^6.4.0",
+    "lighthouse": "^4.3.1"
   },
   "jest-junit": {
     "suiteName": "jest tests",

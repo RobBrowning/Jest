@@ -94,6 +94,7 @@ class UserTimings extends Audit {
         }
       });
 
+      /** @type {LH.Audit.Details.Table['headings']} */
       const headings = [
         {key: 'name', itemType: 'text', text: str_(UIStrings.columnName)},
         {key: 'timingType', itemType: 'text', text: str_(UIStrings.columnType)},
@@ -104,7 +105,7 @@ class UserTimings extends Audit {
 
       const details = Audit.makeTableDetails(headings, tableRows);
 
-      /** @type {LH.Audit.Product['displayValue']} */
+      /** @type {string|undefined} */
       let displayValue;
       if (userTimings.length) {
         displayValue = str_(UIStrings.displayValue, {itemCount: userTimings.length});

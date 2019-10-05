@@ -725,6 +725,10 @@
   margin-top: var(--section-padding);
 }
 
+.lh-list > div:not(:last-child) {
+  padding-bottom: 20px;
+}
+
 .lh-header-container {
   display: block;
   margin: 0 auto;
@@ -797,7 +801,9 @@
 }
 
 .lh-scores-header .lh-gauge--pwa__wrapper {
-  border-left: 1px solid var(--report-secondary-border-color)
+  border-left: 1px solid var(--report-secondary-border-color);
+  /* Can remove when this bug is resolved: https://bugs.chromium.org/p/chromium/issues/detail?id=942097 */
+  will-change: transform;
 }
 
 .lh-scorescale {

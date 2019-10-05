@@ -75,8 +75,7 @@ class CategoryRenderer {
     const scoreDisplayMode = audit.result.scoreDisplayMode;
 
     if (audit.result.displayValue) {
-      const displayValue = Util.formatDisplayValue(audit.result.displayValue);
-      this.dom.find('.lh-audit__display-text', auditEl).textContent = displayValue;
+      this.dom.find('.lh-audit__display-text', auditEl).textContent = audit.result.displayValue;
     }
 
     const titleEl = this.dom.find('.lh-audit__title', auditEl);
@@ -85,10 +84,12 @@ class CategoryRenderer {
         .appendChild(this.dom.convertMarkdownLinkSnippets(audit.result.description));
 
     const header = /** @type {HTMLDetailsElement} */ (this.dom.find('details', auditEl));
-    if (audit.result.details && audit.result.details.type) {
+    if (audit.result.details) {
       const elem = this.detailsRenderer.render(audit.result.details);
-      elem.classList.add('lh-details');
-      header.appendChild(elem);
+      if (elem) {
+        elem.classList.add('lh-details');
+        header.appendChild(elem);
+      }
     }
     this.dom.find('.lh-audit__index', auditEl).textContent = `${index + 1}`;
 

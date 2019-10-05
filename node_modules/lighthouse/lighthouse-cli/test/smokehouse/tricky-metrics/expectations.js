@@ -6,7 +6,7 @@
 'use strict';
 
 /**
- * Expected Lighthouse audit values for tricky TTI tests
+ * Expected Lighthouse audit values for tricky metrics tests
  */
 module.exports = [
   {
@@ -29,6 +29,40 @@ module.exports = [
     audits: {
       'first-contentful-paint': {
         rawValue: '>1', // We just want to check that it doesn't error
+      },
+    },
+  },
+  {
+    requestedUrl: 'http://localhost:10200/tricky-main-thread.html?setTimeout',
+    finalUrl: 'http://localhost:10200/tricky-main-thread.html?setTimeout',
+    audits: {
+      'bootup-time': {
+        details: {
+          items: {
+            0: {
+              // FIXME: Appveyor finds this particular assertion very flaky for some reason :(
+              url: process.env.APPVEYOR ? /main/ : /main-thread-consumer/,
+              scripting: '>1000',
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    requestedUrl: 'http://localhost:10200/tricky-main-thread.html?fetch',
+    finalUrl: 'http://localhost:10200/tricky-main-thread.html?fetch',
+    audits: {
+      'bootup-time': {
+        details: {
+          items: {
+            0: {
+              // TODO: requires async stacks, https://github.com/GoogleChrome/lighthouse/pull/5504
+              // url: /main-thread-consumer/,
+              scripting: '>1000',
+            },
+          },
+        },
       },
     },
   },
