@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="3" failures="0" time="4.971">
+  <testsuite name="_tests_\general.spec.js" errors="0" failures="0" skipped="2" timestamp="2019-10-13T12:58:09" time="3.746" tests="3">
+    <testcase classname="General tests-Go to Google" name="General tests-Go to Google" time="0.001">
+      <skipped/>
+    </testcase>
+    <testcase classname="General tests-Innertext example" name="General tests-Innertext example" time="2.1">
+    </testcase>
+    <testcase classname="General tests-Element exists example" name="General tests-Element exists example" time="0">
+      <skipped/>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -4,7 +4,7 @@ module.exports = {
   routes: {
     home: '/',
     /* otherLevel: {
-      otherWay: 'your-pway',
+      preferences: '/preferences?hl=en',
     }, */
   },
 };

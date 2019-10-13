@@ -30,7 +30,7 @@ test('Innertext example', async () => {
   await page.goto(`${config.appUrlBase}${config.routes.home}`);
   await page.waitForSelector(TestPageModel.locators.logo);
   utils.sleep(3000);
-  const element = await page.$(".gb_P");
+  const element = await page.$(".gb_e");
   const gmailLink = await page.evaluate(element => element.textContent, element);
   //const gmailLink = await page.evaluate(() => document.querySelector('div.gb_ue.gb_R.gb_xg.gb_Lg > div:first-child > a.gb_P').textContent);
   //const gmailLink = await page.$eval('div.gb_ue.gb_R.gb_xg.gb_Lg > div:first-child > a.gb_P', el => (el.innerText));
