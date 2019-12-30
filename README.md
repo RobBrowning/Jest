@@ -81,7 +81,10 @@ For this example using the snapshot tests only it will be this, using 'Snapshot 
 ```
 node c:\working_git\Jest\node_modules\jest\bin\jest.js -t "Snapshot tests" --updateSnapshot
 ```
-
+Also added a npm script to run to update snapshot images
+```
+"update-snapshot": "jest -t --updateSnapshot"
+```
 ## AXE Accessibility Tests
 Using AXE in Jest you can setup tests navigating to your pages and validating the HTML caught by Puppeteer using ```const html = await page.content();``` and passing html into the validation of the test ```expect(await axe(html)).toHaveNoViolations()```.
 
