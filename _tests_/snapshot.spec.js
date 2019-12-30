@@ -11,7 +11,7 @@ let page;
 
 beforeEach(async () => {
   page = await utils.setupBrowser();
-  jest.setTimeout("300000");
+  jest.setTimeout('300000');
 });
 
 afterEach(async () => {
@@ -19,17 +19,23 @@ afterEach(async () => {
 });
 
 describe('Snapshot tests', () => {
-    test('Google Homepage Snapshot', async () => {
-      await page.goto(`${config.appUrlBase}${config.routes.home}`);
-      const image = await page.screenshot({ fullPage: true });
-      expect(image).toMatchImageSnapshot({ failureThreshold: '1', failureThresholdType: 'percent' });
-    },16000);
+  test('Google Homepage Snapshot', async () => {
+    await page.goto(`${config.appUrlBase}${config.routes.home}`);
+    const image = await page.screenshot({ fullPage: true });
+    expect(image).toMatchImageSnapshot({
+      failureThreshold: '1',
+      failureThresholdType: 'percent'
+    });
+  }, 16000);
 
-    test('Google Advertising page Snapshot', async () => {
-      await page.goto(`${config.appUrlBase}${config.routes.home}`);
-      await page.click(TestPageModel.locators.advertisingLink);
-      await utils.sleep(9000);
-      const image = await page.screenshot({ fullPage: true });
-      expect(image).toMatchImageSnapshot({ failureThreshold: '1', failureThresholdType: 'percent' });
-    },16000);
-  });
+  test('Google Advertising page Snapshot', async () => {
+    await page.goto(`${config.appUrlBase}${config.routes.home}`);
+    await page.click(TestPageModel.locators.advertisingLink);
+    await utils.sleep(9000);
+    const image = await page.screenshot({ fullPage: true });
+    expect(image).toMatchImageSnapshot({
+      failureThreshold: '1',
+      failureThresholdType: 'percent'
+    });
+  }, 16000);
+});
